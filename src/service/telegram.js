@@ -60,7 +60,7 @@ class TelegramClass {
         }
     }
 
-    async disconnect(){
+    async disconnect() {
         try {
             return Promise.resolve(await this.client.disconnect())
         } catch (error) {
@@ -154,6 +154,17 @@ class TelegramClass {
             // 加入频道
             return Promise.resolve(await this.client.invoke(new Api.channels.JoinChannel({
                 channel: channel
+            })))
+        } catch (e) {
+            return Promise.reject(e)
+        }
+    }
+
+    async updateStatus(status = false) {
+        try {
+            //逻辑代码
+            return Promise.resolve(await this.client.invoke(new Api.account.UpdateStatus({
+                offline: status
             })))
         } catch (e) {
             return Promise.reject(e)
