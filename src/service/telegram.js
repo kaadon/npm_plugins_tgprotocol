@@ -42,7 +42,7 @@ class TelegramClass {
     }
 
     parseProxyConfig(proxyString) {
-        const [, auth, hostPort] = proxyString.split('@');
+        const [auth, hostPort] = proxyString.split('@');
         const [username, password] = auth.split(':');
         const [host, port] = hostPort.split(':');
         return {host, port: parseInt(port, 10), username, password};
