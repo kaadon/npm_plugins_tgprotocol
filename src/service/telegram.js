@@ -3,6 +3,7 @@ import {StringSession} from 'telegram/sessions';
 import {SocksProxyAgent} from 'socks-proxy-agent';
 import {NewMessage} from "telegram/events";
 import {Api} from "telegram/tl";
+import {default as errorsJson} from "../utils/errors"
 
 class TelegramClass {
     client = undefined
@@ -40,6 +41,14 @@ class TelegramClass {
         );
     }
 
+    getErrorMessage(error) {
+        let errorMessage = error?.errorMessage || error?.message;
+        if (error?.code && errorsJson.hasOwnProperty(error.code) && errorsJson[error.code].hasOwnProperty(error?.errorMessage || error?.message)) {
+            errorMessage = errorsJson[error.code][error.errorMessage || error.message]
+        }
+        return errorMessage
+    }
+
     parseProxyConfig(proxyString) {
         const [auth, hostPort] = proxyString.split('@');
         const [username, password] = auth.split(':');
@@ -52,7 +61,7 @@ class TelegramClass {
             const result = await this.client.connect()
             return Promise.resolve(result)
         } catch (error) {
-            return Promise.reject(new Error(error.errorMessage || error.message))
+            return Promise.reject(new Error(this.getErrorMessage(error)))
         }
     }
 
@@ -61,7 +70,7 @@ class TelegramClass {
             const result = await this.client.disconnect()
             return Promise.resolve(result)
         } catch (error) {
-            return Promise.reject(new Error(error.errorMessage || error.message))
+            return Promise.reject(new Error(this.getErrorMessage(error)))
         }
     }
 
@@ -77,7 +86,7 @@ class TelegramClass {
             const result = await this.client.sendMessage(to, {message});
             return Promise.resolve(result)
         } catch (error) {
-            return Promise.reject(new Error(error.errorMessage || error.message))
+            return Promise.reject(new Error(this.getErrorMessage(error)))
         }
     }
 
@@ -87,7 +96,7 @@ class TelegramClass {
             const result = await this.client.invoke(new Api.contacts.Search(params))
             return Promise.resolve(result)
         } catch (error) {
-            return Promise.reject(new Error(error.errorMessage || error.message))
+            return Promise.reject(new Error(this.getErrorMessage(error)))
         }
     }
 
@@ -102,7 +111,7 @@ class TelegramClass {
             const result = await this.client.invoke(new Api.account.UpdateProfile(updateData))
             return Promise.resolve(result)
         } catch (error) {
-            return Promise.reject(new Error(error.errorMessage || error.message))
+            return Promise.reject(new Error(this.getErrorMessage(error)))
         }
     }
 
@@ -124,7 +133,7 @@ class TelegramClass {
             }))
             return Promise.resolve(result)
         } catch (error) {
-            return Promise.reject(new Error(error.errorMessage || error.message))
+            return Promise.reject(new Error(this.getErrorMessage(error)))
         }
     }
 
@@ -146,7 +155,7 @@ class TelegramClass {
             }))
             return Promise.resolve(result)
         } catch (error) {
-            return Promise.reject(new Error(error.errorMessage || error.message))
+            return Promise.reject(new Error(this.getErrorMessage(error)))
         }
     }
 
@@ -155,12 +164,12 @@ class TelegramClass {
             //逻辑代码
             const channel = await this.client.getEntity(channel_username_or_id);
             // 加入频道
-            const result =await this.client.invoke(new Api.channels.JoinChannel({
+            const result = await this.client.invoke(new Api.channels.JoinChannel({
                 channel: channel
             }))
             return Promise.resolve(result)
         } catch (error) {
-            return Promise.reject(new Error(error.errorMessage || error.message))
+            return Promise.reject(new Error(this.getErrorMessage(error)))
         }
     }
 
@@ -171,8 +180,8 @@ class TelegramClass {
                 offline: status
             }))
             return Promise.resolve(result)
-        } catch (e) {
-            return Promise.reject(e)
+        } catch (error) {
+            return Promise.reject(new Error(this.getErrorMessage(error)))
         }
     }
 }
