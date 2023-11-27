@@ -3,7 +3,6 @@ import {StringSession} from 'telegram/sessions';
 import {SocksProxyAgent} from 'socks-proxy-agent';
 import {NewMessage} from "telegram/events";
 import {Api} from "telegram/tl";
-import {default as errorsJson} from "../utils/errors"
 
 class TelegramClass {
     client = undefined
@@ -41,13 +40,6 @@ class TelegramClass {
         );
     }
 
-    getErrorMessage(error) {
-        let errorMessage = error?.errorMessage || error?.message;
-        if (error?.code && errorsJson.hasOwnProperty(error.code) && errorsJson[error.code].hasOwnProperty(error?.errorMessage || error?.message)) {
-            errorMessage = errorsJson[error.code][error.errorMessage || error.message]
-        }
-        return errorMessage
-    }
 
     parseProxyConfig(proxyString) {
         const [auth, hostPort] = proxyString.split('@');
@@ -61,7 +53,7 @@ class TelegramClass {
             const result = await this.client.connect()
             return Promise.resolve(result)
         } catch (error) {
-            return Promise.reject(new Error(this.getErrorMessage(error)))
+            return Promise.reject(new Error(error?.errorMessage || error?.message))
         }
     }
 
@@ -70,7 +62,7 @@ class TelegramClass {
             const result = await this.client.disconnect()
             return Promise.resolve(result)
         } catch (error) {
-            return Promise.reject(new Error(this.getErrorMessage(error)))
+            return Promise.reject(new Error(error?.errorMessage || error?.message))
         }
     }
 
@@ -86,7 +78,7 @@ class TelegramClass {
             const result = await this.client.sendMessage(to, {message});
             return Promise.resolve(result)
         } catch (error) {
-            return Promise.reject(new Error(this.getErrorMessage(error)))
+            return Promise.reject(new Error(error?.errorMessage || error?.message))
         }
     }
 
@@ -96,7 +88,7 @@ class TelegramClass {
             const result = await this.client.invoke(new Api.contacts.Search(params))
             return Promise.resolve(result)
         } catch (error) {
-            return Promise.reject(new Error(this.getErrorMessage(error)))
+            return Promise.reject(new Error(error?.errorMessage || error?.message))
         }
     }
 
@@ -111,7 +103,7 @@ class TelegramClass {
             const result = await this.client.invoke(new Api.account.UpdateProfile(updateData))
             return Promise.resolve(result)
         } catch (error) {
-            return Promise.reject(new Error(this.getErrorMessage(error)))
+            return Promise.reject(new Error(error?.errorMessage || error?.message))
         }
     }
 
@@ -133,7 +125,7 @@ class TelegramClass {
             }))
             return Promise.resolve(result)
         } catch (error) {
-            return Promise.reject(new Error(this.getErrorMessage(error)))
+            return Promise.reject(new Error(error?.errorMessage || error?.message))
         }
     }
 
@@ -155,7 +147,7 @@ class TelegramClass {
             }))
             return Promise.resolve(result)
         } catch (error) {
-            return Promise.reject(new Error(this.getErrorMessage(error)))
+            return Promise.reject(new Error(error?.errorMessage || error?.message))
         }
     }
 
@@ -169,7 +161,7 @@ class TelegramClass {
             }))
             return Promise.resolve(result)
         } catch (error) {
-            return Promise.reject(new Error(this.getErrorMessage(error)))
+            return Promise.reject(new Error(error?.errorMessage || error?.message))
         }
     }
 
@@ -181,7 +173,7 @@ class TelegramClass {
             }))
             return Promise.resolve(result)
         } catch (error) {
-            return Promise.reject(new Error(this.getErrorMessage(error)))
+            return Promise.reject(new Error(error?.errorMessage || error?.message))
         }
     }
 }
