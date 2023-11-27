@@ -20,7 +20,6 @@ class TelegramClass {
                 }) {
         // 解析SOCKS5代理配置
         const {host, port, username, password} = this.parseProxyConfig(proxy);
-        console.log(`socks5://${username}:${password}@${host}:${port}`)
         const agent = new SocksProxyAgent(
             `socks5://${username}:${password}@${host}:${port}`
         )
@@ -50,25 +49,19 @@ class TelegramClass {
 
     async connect() {
         try {
-            return Promise.resolve(await this.client.connect())
+            const result = await this.client.connect()
+            return Promise.resolve(result)
         } catch (error) {
-            if (error.message === 'AUTH_KEY_UNREGISTERED') {
-                return Promise.resolve(new Error(`StringSession 已过期或无效`))
-            } else {
-                return Promise.reject(error)
-            }
+            return Promise.reject(new Error(error.errorMessage || error.message))
         }
     }
 
     async disconnect() {
         try {
-            return Promise.resolve(await this.client.disconnect())
+            const result = await this.client.disconnect()
+            return Promise.resolve(result)
         } catch (error) {
-            if (error.message === 'AUTH_KEY_UNREGISTERED') {
-                return Promise.reject(new Error('StringSession 已过期或无效。'))
-            } else {
-                return Promise.reject(error)
-            }
+            return Promise.reject(new Error(error.errorMessage || error.message))
         }
     }
 
@@ -79,15 +72,22 @@ class TelegramClass {
     }
 
     async sendMessage(to, message) {
-        await this.client.sendMessage(to, {message});
+        try {
+            //逻辑代码
+            const result = await this.client.sendMessage(to, {message});
+            return Promise.resolve(result)
+        } catch (error) {
+            return Promise.reject(new Error(error.errorMessage || error.message))
+        }
     }
 
     async search(params) {
         try {
             //逻辑代码
-            return Promise.resolve(await this.client.invoke(new Api.contacts.Search(params)))
-        } catch (e) {
-            return Promise.reject(e)
+            const result = await this.client.invoke(new Api.contacts.Search(params))
+            return Promise.resolve(result)
+        } catch (error) {
+            return Promise.reject(new Error(error.errorMessage || error.message))
         }
     }
 
@@ -99,9 +99,10 @@ class TelegramClass {
             if (profile?.about) updateData.about = profile.about
             if (JSON.stringify(updateData) === "{}") return Promise.resolve(false)
             //逻辑代码
-            return Promise.resolve(await this.client.invoke(new Api.account.UpdateProfile(updateData)))
-        } catch (e) {
-            throw new Error(e.message)
+            const result = await this.client.invoke(new Api.account.UpdateProfile(updateData))
+            return Promise.resolve(result)
+        } catch (error) {
+            return Promise.reject(new Error(error.errorMessage || error.message))
         }
     }
 
@@ -117,12 +118,13 @@ class TelegramClass {
             } else {
                 userToInvite.push(await this.client.getEntity(userName))
             }
-            return Promise.resolve(await this.client.invoke(new Api.channels.InviteToChannel({
+            const result = await this.client.invoke(new Api.channels.InviteToChannel({
                 channel: await this.client.getEntity(groupUsernane),
                 users: userToInvite
-            })))
-        } catch (e) {
-            return Promise.reject(e)
+            }))
+            return Promise.resolve(result)
+        } catch (error) {
+            return Promise.reject(new Error(error.errorMessage || error.message))
         }
     }
 
@@ -138,12 +140,13 @@ class TelegramClass {
             } else {
                 userToInvite.push(await this.client.getInputEntity(userId))
             }
-            return Promise.resolve(await this.client.invoke(new Api.channels.InviteToChannel({
+            const result = await this.client.invoke(new Api.channels.InviteToChannel({
                 channel: await this.client.getInputEntity(groupId),
                 users: userToInvite
-            })))
-        } catch (e) {
-            return Promise.reject(e)
+            }))
+            return Promise.resolve(result)
+        } catch (error) {
+            return Promise.reject(new Error(error.errorMessage || error.message))
         }
     }
 
@@ -152,20 +155,22 @@ class TelegramClass {
             //逻辑代码
             const channel = await this.client.getEntity(channel_username_or_id);
             // 加入频道
-            return Promise.resolve(await this.client.invoke(new Api.channels.JoinChannel({
+            const result =await this.client.invoke(new Api.channels.JoinChannel({
                 channel: channel
-            })))
-        } catch (e) {
-            return Promise.reject(e)
+            }))
+            return Promise.resolve(result)
+        } catch (error) {
+            return Promise.reject(new Error(error.errorMessage || error.message))
         }
     }
 
     async updateStatus(status = false) {
         try {
             //逻辑代码
-            return Promise.resolve(await this.client.invoke(new Api.account.UpdateStatus({
+            const result = await this.client.invoke(new Api.account.UpdateStatus({
                 offline: status
-            })))
+            }))
+            return Promise.resolve(result)
         } catch (e) {
             return Promise.reject(e)
         }
