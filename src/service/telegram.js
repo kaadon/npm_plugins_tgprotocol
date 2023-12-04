@@ -26,9 +26,15 @@ class TelegramClass {
             api_id,
             api_hash,
             {
-                proxy: new SocksProxyAgent(
-                    `socks5://${username}:${password}@${host}:${port}`
-                ),
+                proxy: {
+                    socksType:5,
+                    ip: host,
+                    port: port,
+                    MTProxy: false,
+                    timeout: 5,
+                    username: username,
+                    password: password
+                },
                 connectionRetries: 1,
                 deviceModel: device_model,
                 systemVersion: system_version,
