@@ -20,17 +20,16 @@ class TelegramClass {
                 }) {
         // 解析SOCKS5代理配置
         const {host, port, username, password} = this.parseProxyConfig(proxy);
-        const agent = new SocksProxyAgent(
-            `socks5://${username}:${password}@${host}:${port}`
-        )
         // 创建Telegram客户端实例
         this.client = new TelegramClient(
             new StringSession(string_session),
             api_id,
             api_hash,
             {
-                agent: this.agent,
-                connectionRetries: 5,
+                proxy: new SocksProxyAgent(
+                    `socks5://${username}:${password}@${host}:${port}`
+                ),
+                connectionRetries: 1,
                 deviceModel: device_model,
                 systemVersion: system_version,
                 appVersion: app_version,
@@ -53,16 +52,17 @@ class TelegramClass {
             const result = await this.client.connect()
             return Promise.resolve(result)
         } catch (error) {
-            return Promise.reject(new Error(error?.errorMessage || error?.message))
+            return Promise.reject(error)
         }
     }
 
     async disconnect() {
         try {
-            const result = await this.client.disconnect()
-            return Promise.resolve(result)
+            // await this.client.
+            await this.client.disconnect()
+            return Promise.resolve(true)
         } catch (error) {
-            return Promise.reject(new Error(error?.errorMessage || error?.message))
+            return Promise.reject(error)
         }
     }
 
@@ -78,7 +78,7 @@ class TelegramClass {
             const result = await this.client.sendMessage(to, {message});
             return Promise.resolve(result)
         } catch (error) {
-            return Promise.reject(new Error(error?.errorMessage || error?.message))
+            return Promise.reject(error)
         }
     }
 
@@ -88,7 +88,7 @@ class TelegramClass {
             const result = await this.client.invoke(new Api.contacts.Search(params))
             return Promise.resolve(result)
         } catch (error) {
-            return Promise.reject(new Error(error?.errorMessage || error?.message))
+            return Promise.reject(error)
         }
     }
 
@@ -103,7 +103,7 @@ class TelegramClass {
             const result = await this.client.invoke(new Api.account.UpdateProfile(updateData))
             return Promise.resolve(result)
         } catch (error) {
-            return Promise.reject(new Error(error?.errorMessage || error?.message))
+            return Promise.reject(error)
         }
     }
 
@@ -125,7 +125,7 @@ class TelegramClass {
             }))
             return Promise.resolve(result)
         } catch (error) {
-            return Promise.reject(new Error(error?.errorMessage || error?.message))
+            return Promise.reject(error)
         }
     }
 
@@ -147,7 +147,7 @@ class TelegramClass {
             }))
             return Promise.resolve(result)
         } catch (error) {
-            return Promise.reject(new Error(error?.errorMessage || error?.message))
+            return Promise.reject(error)
         }
     }
 
@@ -161,7 +161,7 @@ class TelegramClass {
             }))
             return Promise.resolve(result)
         } catch (error) {
-            return Promise.reject(new Error(error?.errorMessage || error?.message))
+            return Promise.reject(error)
         }
     }
 
@@ -173,7 +173,7 @@ class TelegramClass {
             }))
             return Promise.resolve(result)
         } catch (error) {
-            return Promise.reject(new Error(error?.errorMessage || error?.message))
+            return Promise.reject(error)
         }
     }
 }
